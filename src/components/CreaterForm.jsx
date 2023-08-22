@@ -1,34 +1,88 @@
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable no-unused-vars */
-import React,{useState} from "react";
+import React,{useState,useEffect} from "react";
 
 const CreaterForm = () => {
-  const [formData, setFormData] = useState({
-    general_details: {
-      name: '',
-      about: '',
-    },
-    mentorship_details: {
-      is_creator_available_for_doubts: "",
-      is_creator_going_to_charge: "",
-      preffered_medium_of_contact: "",
-      contact_info: ""
-    }
+  const [formData, setFormData] = useState({    
+      "sub_id": "",
+      "general_details": {
+        "name": "",
+        "about": "",
+        "linkedin_id": ""
+      },
+      "mentorship_details": {
+        "mentorship_charge": 0,
+        "is_creator_available_for_doubts": false,
+        "is_creator_going_to_charge": false,
+        "preffered_medium_of_contact": "",
+        "contact_info": ""
+      }
+    
   });
 
   const handleChange = (e) => {
-    const arr = e.target.id.split(".")
-    let temp = formData
-    temp[arr[0]][arr[1]] = e.target.value
-    setFormData(formData)
-    console.log(formData)
+    const arr = e.target.id.split(".")    
+    let temp = {...formData}
+    let inputvalue=e.target.value
+    if (inputvalue=="yes"){
+      inputvalue=true
+    }
+    else if (inputvalue=="false"){
+      inputvalue=false
+    }
+    temp[arr[0]][arr[1]] = inputvalue
+    setFormData(temp);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Here you can save the formData to your desired location, e.g., an API, database, or local storage.
-    console.log('Form data submitted:', formData);
+
+    const requestOptions = {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
   };
+    
+    fetch("https://f3qz4eid4h.execute-api.ap-south-1.amazonaws.com/testing_skillmapping/add_new_creator",requestOptions).then(response=>{
+      if (response.status !== 200) {
+        console.log('Looks like there was a problem. Status Code: ' +
+            response.status);
+        return;
+      }
+      response.json().then(data=>{
+        console.log(data);
+        setFormData(prevFormData => ({
+          ...prevFormData,
+          sub_id: data.id
+        }))
+        console.log("form being submitted",formData)
+      })
+    }).catch(error=>{
+      console.log("Error in fetch call",error)
+    })
+    
+  };
+
+  useEffect(() => {   
+    const requestOptions = {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData) }
+
+    fetch("https://f3qz4eid4h.execute-api.ap-south-1.amazonaws.com/testing_skillmapping/edit_creator_info",requestOptions).then(response=>{
+      if (response.status !== 200) {
+        console.log('Looks like there was a problem. Status Code: ' +
+            response.status);
+        return;
+      }
+      response.json().then(data=>{
+        console.log(data)
+      })
+    }).catch(error=>{
+      console.log(error)
+    })
+  }, [formData.sub_id]);
 
   const [questions, setQuestions] = useState({
     instructorAvailable: null,
@@ -72,22 +126,22 @@ const CreaterForm = () => {
           <br />
           <label htmlFor="instructorAvailable" className="block mb-2">1. Will instructor be available for Doubts?</label>
           <select
-            id="instructorAvailable"
-            value={questions.instructorAvailable}
-            onChange={e => handleInputChange('instructorAvailable', e.target.value)}
+            id="mentorship_details.is_creator_available_for_doubts"
+            value={formData.mentorship_details.is_creator_available_for_doubts}
+            onChange={handleChange}
             className="border rounded px-2 py-1"
           >
             <option value={null}>Select an option</option>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
+            <option value={true}>Yes</option>
+            <option value={false}>No</option>
           </select>
           <br />
           <br />
           <label htmlFor="instructorChargesFees" className="block mb-2">2. Will instructor charge fees?</label>
           <select
-            id="instructorChargesFees"
-            value={questions.instructorChargesFees}
-            onChange={e => handleInputChange('instructorChargesFees', e.target.value)}
+            id="mentorship_details.is_creator_going_to_charge"
+            value={formData.mentorship_details.is_creator_going_to_charge}
+            onChange={handleChange}
             className="border rounded px-2 py-1"
           >
             <option value={null}>Select an option</option>
@@ -104,7 +158,7 @@ const CreaterForm = () => {
           </label>
           <input
             class="shadow appearance-none border rounded w-3/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="Course Name"
+            id="mentorship_details.preffered_medium_of_contact"
             type="text"
             placeholder="Email/WhatsApp/....."
             onChange={handleChange}
@@ -115,11 +169,13 @@ const CreaterForm = () => {
             class=" flex flex-col block text-gray-700 text-sm font-bold mb-2"
             for="Description"
           >
-            Description
+           About Instructor
           </label>
           <textarea
             rows={7}
             name="message"
+            id="general_details.about"
+            value={formData.general_details.about}
             placeholder="Description"
             className="shadow appearance-none border rounded w-3/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             onChange={handleChange}
