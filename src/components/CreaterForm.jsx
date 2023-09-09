@@ -24,6 +24,7 @@ const CreaterForm = () => {
     const arr = e.target.id.split(".")    
     let temp = {...formData}
     let inputvalue=e.target.value
+    console.log(inputvalue)
     if (inputvalue=="yes"){
       inputvalue=true
     }
@@ -180,6 +181,8 @@ const CreaterForm = () => {
             className="shadow appearance-none border rounded w-3/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             onChange={handleChange}
           />
+          <br />
+          <br />
           <button
             type="submit"
             className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"

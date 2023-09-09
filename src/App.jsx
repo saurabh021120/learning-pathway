@@ -6,6 +6,7 @@ import CreaterDashboard from "./components/CreaterDashboard";
 import CreaterForm from "./components/CreaterForm";
 import LearnForm from "./components/CourseForm";
 import CoursePage from "./components/CoursePage";
+import CourseForm from "./components/CourseForm";
 import "./App.css";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route path="/path" element={<PathwayForm />} />
           <Route path="/learningpathwayform" element={<LearnForm />} />
           <Route path="/coursepage" element={<CoursePage />} />
+          <Route path="/courseform" element={<CourseForm />} />
           <Route path="/creatorform" element={<CreaterForm />} />
         </Routes>
       </div>
